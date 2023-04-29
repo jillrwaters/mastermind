@@ -20,6 +20,7 @@ class PlayerSet
     @player1_score = 0
     @player2_score = 0
     assign_roles
+    
   end
 
   def assign_roles
@@ -41,6 +42,8 @@ end
 players = PlayerSet.new
 
 
+
+
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
 module DecodingBoard; end 
 
@@ -57,14 +60,24 @@ module Agreements
     gets.chomp.lowercase == 'y'
   end
 
-  def number_of_rounds
-    puts 'How many games would you like to play? Enter a number less than 20.'
+  def number_of_games
+    begin 
+      puts 'How many games would you like to play? Enter a number less than 20.'
+      if gets.chomp.to_i > 20
+        raise "\n\nERROR\n\n You must enter a number less than 20"
+      end
+    rescue=>e
+      puts e.message
+      retry
+    end
   end
 end
 
 # guesses, feedback, keeping score
 class Game
-  def initialize(number_of_games)
+  include Agreements
+
+  def initialize
     @number_of_games = number_of_games
     @rounds_left = 12
     @code_pegs = %w(blue green yellow red purple pink)
@@ -79,3 +92,4 @@ class Game
   end
 end
 
+mastermind = Game.new

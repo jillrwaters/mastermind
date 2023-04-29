@@ -51,25 +51,27 @@ module DecodingBoard; end
 module Agreements
   def allow_duplicates?
     puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'
-    gets.chomp.lowercase == 'y'
+    raise 'Enter Y or N only' unless gets.chomp.downcase == 'y'
+  rescue=>e
+    puts e.message
+    retry
   end
 
   def allow_blanks?
     # if true, codemaker can use up to 4 blank or same color | if false: codebreaker can't use blanks for guesses
     puts 'Do you want to allow blanks in the secret code? Press Y for yes or N for no.'
-    gets.chomp.lowercase == 'y'
+    raise 'Enter Y or N only' unless %w[y n yes no].include?(gets.chomp.downcase)
+  rescue=>e
+    puts e.message
+    retry
   end
 
   def number_of_games
-    begin 
-      puts 'How many games would you like to play? Enter a number less than 20.'
-      if gets.chomp.to_i > 20
-        raise "\n\nERROR\n\n You must enter a number less than 20"
-      end
-    rescue=>e
-      puts e.message
-      retry
-    end
+    puts 'How many games would you like to play? Enter a number less than 20.'
+    raise "\n\nERROR\n\n You must enter a number less than 20" unless gets.chomp.to_i < 20
+  rescue=>e
+    puts e.message
+    retry
   end
 end
 
@@ -78,9 +80,11 @@ class Game
   include Agreements
 
   def initialize
-    @number_of_games = number_of_games
     @rounds_left = 12
     @code_pegs = %w(blue green yellow red purple pink)
+    number_of_games
+    allow_duplicates?
+    allow_blanks?
   end
 
   def codebreaker_guess

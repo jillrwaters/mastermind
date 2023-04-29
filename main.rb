@@ -1,8 +1,6 @@
 # code pegs: used by both players for making and guessing secret code
 # key pegs: used by codemaker for feedback after codebreaker guesses
-key_pegs = %w(black white)
-
-number_of_games = 0
+key_pegs = %w[black white]
 # gameplay -> codemaker chooses code based on agreed upon rules -> 12 turns with 2 parts to each turn: guessing and feedback
 # codebreaker's part -> make a guess with 4 'pegs'
 # codemaker's part -> feedback. 1 black peg for each 'peg' in correct color AND position | 1 white peg for each peg correct in color only
@@ -20,7 +18,6 @@ class PlayerSet
     @player1_score = 0
     @player2_score = 0
     assign_roles
-    
   end
 
   def assign_roles
@@ -39,19 +36,14 @@ class PlayerSet
   def keep_score; end
 end
 
-players = PlayerSet.new
-
-
-
-
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
-module DecodingBoard; end 
+module DecodingBoard; end
 
 # players must agree on whether duplicates and/or blanks are allowed also how many games
 module Agreements
   def allow_duplicates?
     puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'
-    raise 'Enter Y or N only' unless gets.chomp.downcase == 'y'
+    raise 'Enter Y or N only' unless %w[y n yes no].include?(gets.chomp.downcase)
   rescue=>e
     puts e.message
     retry
@@ -80,20 +72,17 @@ class Game
   include Agreements
 
   def initialize
+    @players = PlayerSet.new
     @rounds_left = 12
     @code_pegs = %w(blue green yellow red purple pink)
-    number_of_games
+    @games_left = number_of_games
     allow_duplicates?
     allow_blanks?
   end
 
-  def codebreaker_guess
+  def codebreaker_guess; end
 
-  end
-
-  def codemaker_feedback
-
-  end
+  def codemaker_feedback; end
 end
 
-mastermind = Game.new
+Game.new

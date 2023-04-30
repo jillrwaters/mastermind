@@ -42,31 +42,60 @@ class PlayerSet
 end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
-module DecodingBoard
-  attr_reader :red, :blue, :green
-  red = '    red    '.on_red
-  blue = '   blue    '.on_blue
-  green = '   green   '.on_green
-  yellow = '  yellow   '.on_yellow
-  magenta = '  magenta  '.on_magenta
-  cyan = '   cyan    '.on_cyan
-  blank = ' | blank | '
-  
-  def code_pegs
-    puts red + blue + green + yellow + magenta + cyan + blank
+class PegSet
+  attr_reader :blank, :game_pegs
+  def initialize
+    @red = '    red    '.on_red
+    @blue = '   blue    '.on_blue
+    @green = '   green   '.on_green
+    @yellow = '  yellow   '.on_yellow
+    @magenta = '  magenta  '.on_magenta
+    @cyan = '   cyan    '.on_cyan
+    @blank = ' | blank | '
+    @black = ' black '.on_black
+    @white = ' white '.on_white
+  end
+
+  def game_pegs
+    puts @red + @blue + @green + @yellow + @magenta + @cyan
   end
 
   def feedback_pegs
-    black = ' black '.on_black
-    white = ' white '.on_white
-    puts black + white
+    puts @black + @white
   end
+
+
+  def example_code
+    puts @green + @magenta + @red + @cyan
+  end
+
+  def example_code_with_duplicates
+    puts @cyan + @magenta + @cyan + @magenta
+  end
+
+  def example_code_with_blanks
+    puts @blue + @blank + @cyan + @red
+  end
+
+  def example_code_with_duplicates_and_blanks
+    puts @blank + @blank + @cyan + @green
+  end
+
+  def example_code_with_all_blanks
+    puts @blank + @blank + @blank + @blank
+  end
+
+  def example_code_with_all_duplicates
+    puts @yellow + @yellow + @yellow + @yellow
+  end
+
+  
 end
 
 # players must agree on whether duplicates and/or blanks are allowed also how many games
 module Agreements
   def allow_duplicates?
-    puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'
+    puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.green
     raise 'Enter Y or N only' unless %w[y n yes no].include?(gets.chomp.downcase)
   rescue=>e
     puts e.message
@@ -75,7 +104,7 @@ module Agreements
 
   def allow_blanks?
     # if true, codemaker can use up to 4 blank or same color | if false: codebreaker can't use blanks for guesses
-    puts 'Do you want to allow blanks in the secret code? Press Y for yes or N for no.'
+    puts 'Do you want to allow blanks in the secret code? Press Y for yes or N for no.'.green
     raise 'Enter Y or N only' unless %w[y n yes no].include?(gets.chomp.downcase)
   rescue=>e
     puts e.message
@@ -86,7 +115,7 @@ module Agreements
     puts 'How many games would you like to play? Enter an EVEN number less than 20.'.light_green
     amount = gets.chomp.to_i
     raise "\n\nERROR\n\n You must enter a number less than 20" unless amount < 20 
-    raise "\n\nERROR\N\N You must enter an even number" unless amount.even?
+    raise "\n\nERROR\n\n You must enter an even number" unless amount.even?
   rescue=>e
     puts e.message
     retry
@@ -94,7 +123,6 @@ module Agreements
 end
 
 module Instructions
-  include DecodingBoard
 
   def general_explanation
     puts
@@ -116,7 +144,14 @@ module Instructions
   def explain_agreements
     puts 'PLAYER AGREEMENTS'.yellow
     puts '-Both parties must agree on a few things before starting the game.'
-    puts '-Since the roles alternate each game, the number of games you choose must be an even number.'
+    puts
+    puts 'Number of games to play:'.blue
+    puts '-Each game consists of 12 rounds/turns.'
+    puts '-In each round/turn, the codebreaker will make a guess and then the codemaker will give feedback.'
+    puts '-Points are only awarded to the codemaker at the end of each game if the code was not guessed correctly.'
+    puts '-Since the roles alternate each game, the number of games you choose must be an even number for fair scoring.'
+    puts
+    puts 'The other two agreements, whether to allow duplicates or blanks in the code will be explained below.'.light_black
     puts
   end
 
@@ -137,18 +172,38 @@ module Instructions
   end
 
   def explain_pegs
+    pegs = PegSet.new
     puts
-    puts 'PEGS - OVERVIEW'.yellow
-    puts '-There are two types of colored pegs that will be used. The first group of pegs are called' + ' code pegs'.red + '.'
+    puts 'PEGS'.yellow
+    puts '-There are two types of colored pegs that will be used.'
+    puts '-The first group of pegs are called' + ' code pegs'.red + '.'
     puts '-There are six possible colors to choose from:'
     puts
-    puts code_pegs
+    puts pegs.game_pegs
     puts
     puts 'An example secret code might look like this:'
     puts
-    puts green + magenta + red + cyan
+    puts pegs.example_code
     puts
-    puts 'There are no duplicate or blank pegs in this code.'
+    puts 'There are no duplicate or blank pegs in the above code. However, a code with duplicates could look like this:'
+    puts
+    puts pegs.example_code_with_duplicates
+    puts
+    puts 'And a code with a blank:'
+    puts
+    puts pegs.example_code_with_blanks
+    puts
+    puts 'You can even choose codes with all duplicates:'
+    puts
+    puts pegs.example_code_with_all_duplicates
+    puts 
+    puts 'Or with all blanks:'
+    puts
+    puts pegs.example_code_with_all_blanks
+    puts
+    puts 'To reiterate, you do not have to allow duplicates and blanks in your games.'
+    puts
+
 
   end
 
@@ -167,7 +222,6 @@ end
 # guesses, feedback, keeping score
 class Game
   include Agreements
-  include DecodingBoard
   include Instructions
 
   def initialize
@@ -187,6 +241,4 @@ class Game
   def codemaker_feedback; end
 end
 
-# Game.new
-
-puts DecodingBoard.green
+Game.new

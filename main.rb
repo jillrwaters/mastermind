@@ -14,8 +14,12 @@ class PlayerSet
   def initialize
     puts 'Player 1, what is your name?'
     @player1_name = gets.chomp
+    puts "Thanks, #{@player1_name}! Your role will be randomly assigned momentarily.".light_black
+    puts
     puts 'Player 2, what is your name?'
     @player2_name = gets.chomp
+    puts "Thanks, #{@player2_name}! Your role will also be assigned momentarily.".light_black
+    puts
     @player1_score = 0
     @player2_score = 0
     assign_roles
@@ -39,23 +43,25 @@ end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
 module DecodingBoard
+  attr_reader :red, :blue, :green
+  red = '    red    '.on_red
+  blue = '   blue    '.on_blue
+  green = '   green   '.on_green
+  yellow = '  yellow   '.on_yellow
+  magenta = '  magenta  '.on_magenta
+  cyan = '   cyan    '.on_cyan
+  blank = ' | blank | '
+  
   def code_pegs
-    red = '    red    '.on_red
-    blue = '   blue    '.on_blue
-    green = '   green   '.on_green
-    yellow = '  yellow   '.on_yellow
-    magenta = '  magenta  '.on_magenta
-    cyan = '   cyan    '.on_cyan
-    puts red + blue + green + yellow + magenta + cyan
+    puts red + blue + green + yellow + magenta + cyan + blank
   end
 
   def feedback_pegs
     black = ' black '.on_black
-  white = ' white '.on_white
+    white = ' white '.on_white
     puts black + white
   end
 end
-
 
 # players must agree on whether duplicates and/or blanks are allowed also how many games
 module Agreements
@@ -77,8 +83,10 @@ module Agreements
   end
 
   def number_of_games
-    puts 'How many games would you like to play? Enter a number less than 20.'
-    raise "\n\nERROR\n\n You must enter a number less than 20" unless gets.chomp.to_i < 20 # FIX: NUMBER MUST BE EVEN
+    puts 'How many games would you like to play? Enter an EVEN number less than 20.'.light_green
+    amount = gets.chomp.to_i
+    raise "\n\nERROR\n\n You must enter a number less than 20" unless amount < 20 
+    raise "\n\nERROR\N\N You must enter an even number" unless amount.even?
   rescue=>e
     puts e.message
     retry
@@ -86,37 +94,66 @@ module Agreements
 end
 
 module Instructions
-
-def intro
- 
-end
-
-def rules
-  puts 
-end
-
-end
-
-# guesses, feedback, keeping score
-class Game
-  include Agreements
   include DecodingBoard
 
-  def initialize
-    @players = PlayerSet.new
-    @rounds_left = 12
-    @games_left = number_of_games
-    allow_duplicates?
-    allow_blanks?
+  def general_explanation
+    puts
+    puts 'W E L C O M E   T O   M A S T E R M I N D'.light_magenta
+    puts 'This is a game for two players where one person makes a secret code that the other attempts to guess.'
+    puts
   end
 
-  def explain_game
-    puts 'Welcome to Mastermind!'.red
-    puts 'This is a code-breaking game for two players.'
+  def overview_player_roles
+    puts 'PLAYER ROLES - OVERVIEW'.yellow
+    puts '-One player will be the codemaker and one will be the codebreaker.'
+    puts '-In the first round of each game, the roles will be picked randomly by the computer.'
+    puts '-After that, the roles will alternate until the end of all games.'
     puts
-    puts 'One player will be the codemaker and one will be the codebreaker.'
-    puts 'The first person to be codemaker will be chosen randomly, and then your roles will alternate with each game.'
+    puts 'Both players will now be asked to input your names.'.light_green
+    puts
+  end
 
+  def explain_agreements
+    puts 'PLAYER AGREEMENTS'.yellow
+    puts '-Both parties must agree on a few things before starting the game.'
+    puts '-Since the roles alternate each game, the number of games you choose must be an even number.'
+    puts
+  end
+
+  def explain_codemaker_role
+
+  end
+
+  def explain_codebreaker_role
+
+  end
+
+  def explain_guessing
+
+  end
+
+  def explain_feedback
+
+  end
+
+  def explain_pegs
+    puts
+    puts 'PEGS - OVERVIEW'.yellow
+    puts '-There are two types of colored pegs that will be used. The first group of pegs are called' + ' code pegs'.red + '.'
+    puts '-There are six possible colors to choose from:'
+    puts
+    puts code_pegs
+    puts
+    puts 'An example secret code might look like this:'
+    puts
+    puts green + magenta + red + cyan
+    puts
+    puts 'There are no duplicate or blank pegs in this code.'
+
+  end
+
+
+  def explain_game
     puts 'The codemaker will choose from six colors to make a 4-color code. For example, here are the colors you can choose from.'
     puts code_pegs
     puts
@@ -125,9 +162,31 @@ class Game
     puts 'Next, decide w'
   end
 
+end
+
+# guesses, feedback, keeping score
+class Game
+  include Agreements
+  include DecodingBoard
+  include Instructions
+
+  def initialize
+    general_explanation
+    overview_player_roles
+    @players = PlayerSet.new
+    explain_agreements
+    @rounds_left = 12
+    @games_left = number_of_games
+    explain_pegs
+    allow_duplicates?
+    allow_blanks?
+  end
+
   def codebreaker_guess; end
 
   def codemaker_feedback; end
 end
 
-Game.new.explain_game
+# Game.new
+
+puts DecodingBoard.green

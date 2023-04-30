@@ -1,3 +1,4 @@
+require 'colorize'
 # code pegs: used by both players for making and guessing secret code
 # key pegs: used by codemaker for feedback after codebreaker guesses
 key_pegs = %w[black white]
@@ -37,7 +38,30 @@ class PlayerSet
 end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
-module DecodingBoard; end
+class DecodingBoard
+
+  def initialize
+    @red = '    red    '.on_red
+    @blue = '   blue    '.on_blue
+    @green = '   green   '.on_green
+    @yellow = '  yellow   '.on_yellow
+    @magenta = '  magenta  '.on_magenta
+    @cyan = '   cyan    '.on_cyan
+    @black = ' black '.on_black
+    @white = ' white '.on_white
+  end
+
+  def code_pegs
+    puts @red + @blue + @green + @yellow + @magenta + @cyan
+  end
+
+  def feedback_pegs
+    puts @black + @white
+  end
+end
+
+DecodingBoard.new.code_pegs
+DecodingBoard.new.feedback_pegs
 
 # players must agree on whether duplicates and/or blanks are allowed also how many games
 module Agreements
@@ -67,6 +91,18 @@ module Agreements
   end
 end
 
+module Instructions
+
+def intro
+ 
+end
+
+def rules
+  puts 
+end
+
+end
+
 # guesses, feedback, keeping score
 class Game
   include Agreements
@@ -80,9 +116,20 @@ class Game
     allow_blanks?
   end
 
+  def explain_game
+    puts 'Welcome to Mastermind!'.red
+    puts 'This is a code-breaking game for two players.'
+    puts
+    puts 'One player will be the codemaker and one will be the codebreaker. The codemaker will choose from six colors to make a 4-color code.'
+    puts
+    puts 'First, decide how many games you would like to play. It must be an even number.'
+    puts
+    puts 'Next, decide w'
+  end
+
   def codebreaker_guess; end
 
   def codemaker_feedback; end
 end
 
-Game.new
+Game.new.explain_game

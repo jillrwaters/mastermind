@@ -38,30 +38,24 @@ class PlayerSet
 end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
-class DecodingBoard
-
-  def initialize
-    @red = '    red    '.on_red
-    @blue = '   blue    '.on_blue
-    @green = '   green   '.on_green
-    @yellow = '  yellow   '.on_yellow
-    @magenta = '  magenta  '.on_magenta
-    @cyan = '   cyan    '.on_cyan
-    @black = ' black '.on_black
-    @white = ' white '.on_white
-  end
-
+module DecodingBoard
   def code_pegs
-    puts @red + @blue + @green + @yellow + @magenta + @cyan
+    red = '    red    '.on_red
+    blue = '   blue    '.on_blue
+    green = '   green   '.on_green
+    yellow = '  yellow   '.on_yellow
+    magenta = '  magenta  '.on_magenta
+    cyan = '   cyan    '.on_cyan
+    puts red + blue + green + yellow + magenta + cyan
   end
 
   def feedback_pegs
-    puts @black + @white
+    black = ' black '.on_black
+  white = ' white '.on_white
+    puts black + white
   end
 end
 
-DecodingBoard.new.code_pegs
-DecodingBoard.new.feedback_pegs
 
 # players must agree on whether duplicates and/or blanks are allowed also how many games
 module Agreements
@@ -84,7 +78,7 @@ module Agreements
 
   def number_of_games
     puts 'How many games would you like to play? Enter a number less than 20.'
-    raise "\n\nERROR\n\n You must enter a number less than 20" unless gets.chomp.to_i < 20
+    raise "\n\nERROR\n\n You must enter a number less than 20" unless gets.chomp.to_i < 20 # FIX: NUMBER MUST BE EVEN
   rescue=>e
     puts e.message
     retry
@@ -106,11 +100,11 @@ end
 # guesses, feedback, keeping score
 class Game
   include Agreements
+  include DecodingBoard
 
   def initialize
     @players = PlayerSet.new
     @rounds_left = 12
-    @code_pegs = %w(blue green yellow red purple pink)
     @games_left = number_of_games
     allow_duplicates?
     allow_blanks?
@@ -120,7 +114,11 @@ class Game
     puts 'Welcome to Mastermind!'.red
     puts 'This is a code-breaking game for two players.'
     puts
-    puts 'One player will be the codemaker and one will be the codebreaker. The codemaker will choose from six colors to make a 4-color code.'
+    puts 'One player will be the codemaker and one will be the codebreaker.'
+    puts 'The first person to be codemaker will be chosen randomly, and then your roles will alternate with each game.'
+
+    puts 'The codemaker will choose from six colors to make a 4-color code. For example, here are the colors you can choose from.'
+    puts code_pegs
     puts
     puts 'First, decide how many games you would like to play. It must be an even number.'
     puts

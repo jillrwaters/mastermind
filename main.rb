@@ -8,37 +8,15 @@ key_pegs = %w[black white]
 # scoring -> only codemaker gets points in round | player with highest total points after all rounds finished
 
 # 2 players: codemaker and codebreaker
-class PlayerSet
-  attr_accessor :player1_name, :player2_name, :codemaker, :codebreaker
+class Player
+  attr_accessor :human, :player2_name, :codemaker, :codebreaker
 
   def initialize
-    puts 'Player 1, what is your name?'
-    @player1_name = gets.chomp
-    puts "Thanks, #{@player1_name}! Your role will be randomly assigned momentarily.".light_black
-    puts
-    puts 'Player 2, what is your name?'
-    @player2_name = gets.chomp
-    puts "Thanks, #{@player2_name}! Your role will also be assigned momentarily.".light_black
-    puts
-    @player1_score = 0
-    @player2_score = 0
-    assign_roles
+    @computer = computer
+    puts 'What is your name?'
+    @human = gets.chomp
+    puts "Thanks, #{@human}! You will be the codebreaker.".light_black
   end
-
-  def assign_roles
-    players = [@player1_name, @player2_name]
-    @codemaker = players.sample
-    @codebreaker = @player1_name if @codemaker == @player2_name
-    @codebreaker = @player2_name if @codemaker == @player1_name
-  end
-
-  def switch_roles
-    # alternate players for codemaker and codebreaker
-    @codemaker = @codemaker == @player1_name ? @player2_name : @player1_name
-    @codebreaker = @codebreaker == @player1_name ? @player2_name : @player1_name
-  end
-
-  def keep_score; end
 end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
@@ -92,8 +70,8 @@ class PegSet
   
 end
 
-# players must agree on whether duplicates and/or blanks are allowed also how many games
-module Agreements
+# ask player whether duplicates and/or blanks are allowed also how many games
+module Questions
   def allow_duplicates?
     puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.green
     raise 'Enter Y or N only' unless %w[y n yes no].include?(gets.chomp.downcase)
@@ -114,53 +92,27 @@ module Agreements
   def number_of_games
     puts 'How many games would you like to play? Enter an EVEN number less than 20.'.light_green
     amount = gets.chomp.to_i
-    raise "\n\nERROR\n\n You must enter a number less than 20" unless amount < 20 
-    raise "\n\nERROR\n\n You must enter an even number" unless amount.even?
+    raise "\n\nERROR You must enter a number less than 20\n\n" unless amount < 20 
+    raise "\n\nERROR You must enter an even number\n\n" unless amount.even?
   rescue=>e
     puts e.message
     retry
   end
 end
 
+# explain how to play the game
 module Instructions
-
+  @@pegs = PegSet.new
   def general_explanation
-    puts
     puts 'W E L C O M E   T O   M A S T E R M I N D'.light_magenta
-    puts 'This is a game for two players where one person makes a secret code that the other attempts to guess.'
-    puts
-  end
-
-  def overview_player_roles
-    puts 'PLAYER ROLES - OVERVIEW'.yellow
-    puts '-One player will be the codemaker and one will be the codebreaker.'
-    puts '-In the first round of each game, the roles will be picked randomly by the computer.'
-    puts '-After that, the roles will alternate until the end of all games.'
-    puts
-    puts 'Both players will now be asked to input your names.'.light_green
-    puts
-  end
-
-  def explain_agreements
-    puts 'PLAYER AGREEMENTS'.yellow
-    puts '-Both parties must agree on a few things before starting the game.'
-    puts
-    puts 'Number of games to play:'.blue
-    puts '-Each game consists of 12 rounds/turns.'
-    puts '-In each round/turn, the codebreaker will make a guess and then the codemaker will give feedback.'
-    puts '-Points are only awarded to the codemaker at the end of each game if the code was not guessed correctly.'
-    puts '-Since the roles alternate each game, the number of games you choose must be an even number for fair scoring.'
-    puts
-    puts 'The other two agreements, whether to allow duplicates or blanks in the code will be explained below.'.light_black
-    puts
-  end
-
-  def explain_codemaker_role
-
-  end
-
-  def explain_codebreaker_role
-
+    puts "\nHow to play:".yellow
+    puts " - The computer will generate a secret code consisting of 4 color pegs that will look something like this:\n\n"
+    puts @@pegs.example_code
+    puts " - The code will consist of 4 colors but there are SIX POSSIBLE COLORS to choose from:\n\n"
+    puts @@pegs.game_pegs
+    puts "\n - You will be asked how many games you would like to play.\n\n"
+    puts " - Each game consists of 12 rounds.\n\n"
+    puts " - Each round, you will guess the secret code and the computer will give feedback based on your guess.\n\n"
   end
 
   def explain_guessing
@@ -221,24 +173,23 @@ end
 
 # guesses, feedback, keeping score
 class Game
-  include Agreements
+  include Questions
   include Instructions
 
   def initialize
     general_explanation
-    overview_player_roles
-    @players = PlayerSet.new
-    explain_agreements
     @rounds_left = 12
-    @games_left = number_of_games
     explain_pegs
     allow_duplicates?
     allow_blanks?
+    @games_left = number_of_games
   end
 
   def codebreaker_guess; end
 
   def codemaker_feedback; end
+
+  def keep_score; end
 end
 
 Game.new

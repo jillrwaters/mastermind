@@ -7,7 +7,7 @@ key_pegs = %w[black white]
 # codemaker's part -> feedback. 1 black peg for each 'peg' in correct color AND position | 1 white peg for each peg correct in color only
 # scoring -> only codemaker gets points in round | player with highest total points after all rounds finished
 
-# 2 players: codemaker and codebreaker
+# human vs computer
 class Player
   attr_accessor :human, :player2_name, :codemaker, :codebreaker
 
@@ -21,17 +21,18 @@ end
 
 # decoding board: 12 rows for guessing, 4 large holes and 8 small holes per row (4 on either side), 1 hidden row
 class PegSet
-  attr_reader :blank, :game_pegs
+  attr_reader :blank
+
   def initialize
-    @red = '    red    '.on_red
-    @blue = '   blue    '.on_blue
-    @green = '   green   '.on_green
-    @yellow = '  yellow   '.on_yellow
-    @magenta = '  magenta  '.on_magenta
-    @cyan = '   cyan    '.on_cyan
-    @blank = ' | blank | '
-    @black = ' black '.on_black
-    @white = ' white '.on_white
+    @red = '   red   '.on_red
+    @blue = '  blue   '.on_blue
+    @green = '  green  '.on_green
+    @yellow = ' yellow  '.on_yellow
+    @magenta = ' magenta '.on_magenta
+    @cyan = '  cyan   '.on_cyan
+    @blank = '| blank |'
+    @black = 'black'.on_black
+    @white = 'white'.on_white
   end
 
   def game_pegs
@@ -41,7 +42,6 @@ class PegSet
   def feedback_pegs
     puts @black + @white
   end
-
 
   def example_code
     puts @green + @magenta + @red + @cyan
@@ -90,10 +90,9 @@ module Questions
   end
 
   def number_of_games
-    puts 'How many games would you like to play? Enter an EVEN number less than 20.'.light_green
+    puts 'How many games would you like to play? Enter a number less than 20.'.light_green
     amount = gets.chomp.to_i
     raise "\n\nERROR You must enter a number less than 20\n\n" unless amount < 20 
-    raise "\n\nERROR You must enter an even number\n\n" unless amount.even?
   rescue=>e
     puts e.message
     retry
@@ -104,71 +103,35 @@ end
 module Instructions
   @@pegs = PegSet.new
   def general_explanation
-    puts 'W E L C O M E   T O   M A S T E R M I N D'.light_magenta
-    puts "\nHow to play:".yellow
-    puts " - The computer will generate a secret code consisting of 4 color pegs that will look something like this:\n\n"
+    puts
+    puts 'W E L C O M E   T O   M A S T E R M I N D !'.light_magenta
+    puts "\nHOW TO PLAY:".yellow
+    puts ' - The computer will generate a secret code consisting of 4 color pegs that will look something like this:'
     puts @@pegs.example_code
     puts " - The code will consist of 4 colors but there are SIX POSSIBLE COLORS to choose from:\n\n"
     puts @@pegs.game_pegs
-    puts "\n - You will be asked how many games you would like to play.\n\n"
+    puts ' - There are no duplicate or blank pegs in the above secret code. One with duplicates could look like this:'
+    puts
+    puts @@pegs.example_code_with_duplicates
+    puts ' - And a code with a blank:'
+    puts
+    puts @@pegs.example_code_with_blanks
+    puts ' - There could even be a code with all duplicates:'
+    puts
+    puts @@pegs.example_code_with_all_duplicates
+    puts ' - Or with all blanks:'
+    puts
+    puts @@pegs.example_code_with_all_blanks
+    puts ' - You do not have to allow duplicates and blanks in your games.'.red
+    puts "\n - You will be asked if you want to allow duplicates and/or blanks in the computer-generated secret code.\n"
+    puts "\n - You will also be asked how many games you would like to play.\n\n"
     puts " - Each game consists of 12 rounds.\n\n"
     puts " - Each round, you will guess the secret code and the computer will give feedback based on your guess.\n\n"
   end
 
-  def explain_guessing
+  def explain_guessing; end
 
-  end
-
-  def explain_feedback
-
-  end
-
-  def explain_pegs
-    pegs = PegSet.new
-    puts
-    puts 'PEGS'.yellow
-    puts '-There are two types of colored pegs that will be used.'
-    puts '-The first group of pegs are called' + ' code pegs'.red + '.'
-    puts '-There are six possible colors to choose from:'
-    puts
-    puts pegs.game_pegs
-    puts
-    puts 'An example secret code might look like this:'
-    puts
-    puts pegs.example_code
-    puts
-    puts 'There are no duplicate or blank pegs in the above code. However, a code with duplicates could look like this:'
-    puts
-    puts pegs.example_code_with_duplicates
-    puts
-    puts 'And a code with a blank:'
-    puts
-    puts pegs.example_code_with_blanks
-    puts
-    puts 'You can even choose codes with all duplicates:'
-    puts
-    puts pegs.example_code_with_all_duplicates
-    puts 
-    puts 'Or with all blanks:'
-    puts
-    puts pegs.example_code_with_all_blanks
-    puts
-    puts 'To reiterate, you do not have to allow duplicates and blanks in your games.'
-    puts
-
-
-  end
-
-
-  def explain_game
-    puts 'The codemaker will choose from six colors to make a 4-color code. For example, here are the colors you can choose from.'
-    puts code_pegs
-    puts
-    puts 'First, decide how many games you would like to play. It must be an even number.'
-    puts
-    puts 'Next, decide w'
-  end
-
+  def explain_feedback; end
 end
 
 # guesses, feedback, keeping score
@@ -183,7 +146,10 @@ class Game
     allow_duplicates?
     allow_blanks?
     @games_left = number_of_games
+    @pegs = PegSet.new
   end
+
+  def generate_code; end
 
   def codebreaker_guess; end
 

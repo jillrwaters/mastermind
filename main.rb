@@ -107,9 +107,9 @@ module Instructions
     puts
     puts 'M A S T E R M I N D '.light_magenta
     puts "\nHOW TO PLAY:".yellow
-    puts ' - The computer will generate a secret code consisting of 4 color pegs that will look something like this:'
+    puts " - The computer will generate a secret code consisting of 4 color pegs that look something like this:\n\n"
     puts @@pegs.example_code
-    puts " - The code will consist of 4 colors but there are SIX POSSIBLE COLORS to choose from:\n\n"
+    puts " - The secret code has 4 colors but there are SIX POSSIBLE COLORS to choose from:\n\n"
     puts @@pegs.game_pegs
     puts ' - There are no duplicate or blank pegs in the above secret code. One with duplicates could look like this:'
     puts
@@ -126,24 +126,56 @@ module Instructions
     puts '*** You do not have to allow duplicates and/or blanks in your games. ***'.red
     puts
     puts " - Each game consists of 12 rounds.\n\n"
-    puts " - Each round, you will guess the secret code and the computer will give feedback based on your guess.\n\n"
+    puts " - Each round, you will attempt to guess the secret code and the computer will give feedback based on your guess.\n\n"
   end
 
   def code_generating
-    puts "\n\nThe computer has generated a 4-peg secret code based off the six color pegs shown above.\n\n"
+    puts '----------'
+    puts "\n\nThe computer has randomly generated a 4-peg secret code based off the six color pegs shown above. You must guess it correctly to get a point.\n\nIf you don't guess the secret code within 12 rounds of a game, the computer gets the point. The player with the highest score wins." 
+    puts '----------'
   end
 
   def explain_guessing
-    puts @@pegs.game_pegs
+    puts "\n\nH O W  T O  G U E S S".yellow
+    puts "To make a guess, type the letters for the color you would like to guess. Also, dont forget your answers to the previous questions about duplicates and blanks.\n\n"
+    puts "To guess a blank, enter '--' when prompted."
+    puts "\n\nFor example, when prompted to make your guess for the first slot in the code, it looks like this:\n\n"
+    puts @@pegs.example_code_with_blanks
+    puts "and you would type this: 'bl' and press enter to make your guess.\n\n"
+    puts "You can only input two letters at a time, and they must be included in the list of colors. "
+    puts "Here's what you have to choose from: \n\n"
+    puts @pegs.game_pegs
+    puts "A secret code has been generated.\n".blue + "You may begin guessing by typing the first color in your guess and pressing enter:"
+    puts
+    puts "For example, enter 'rd' for red."
   end
 
   def explain_feedback; end
+end
+
+module Feedback
+
+end
+
+module Guess
+  @@guess = []
+  def show_current_guess; end
+
+  def request_guess
+    explain_guessing
+    guess = gets.chomp.downcase
+    [guess]
+  end
+
+
 end
 
 # guesses, feedback, keeping score
 class Game
   include Questions
   include Instructions
+  include Guess
+  include Feedback
 
   def initialize
     general_explanation
@@ -152,19 +184,20 @@ class Game
     allow_blanks?
     @games_left = number_of_games
     @pegs = PegSet.new
-    code_generating
-    code_breaker_guess
+    @secret_code = []
+    request_guess
   end
 
-  def generate_secret_code; end
+  def generate_secret_code
+    colors = @pegs.game_pegs
 
-  def code_breaker_guess
-    puts "\n\nIn order to make a guess, type the first letter of the color you would like to guess. Also, dont forget your answers to the previous questions about duplicates and blanks.".yellow
-    puts "\n\nFor example, if this is the pattern you're guessing, it looks like this:\n\n".yellow
-    explain_guessing
-    puts
-
+    4.times do |color|
+      color = colors.random
+      @secret_code << color
+    end
   end
+
+
 
   def codemaker_feedback; end
 

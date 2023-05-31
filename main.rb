@@ -15,7 +15,7 @@ class Player
     @computer = computer
     puts 'What is your name?'
     @human = gets.chomp
-    puts "Thanks, #{@human}! You will be the codebreaker.".light_black
+    puts "Thanks, #{@human}! You will be the codebreaker.-ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp".light_black
   end
 end
 

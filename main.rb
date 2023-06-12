@@ -1,11 +1,5 @@
 require 'colorize'
-# code pegs: used by both players for making and guessing secret code
-# key pegs: used by codemaker for feedback after codebreaker guesses
-key_pegs = %w[black white]
-# gameplay -> codemaker chooses code based on agreed upon rules -> 12 turns with 2 parts to each turn: guessing and feedback
-# codebreaker's part -> make a guess with 4 'pegs'
-# codemaker's part -> feedback. 1 black peg for each 'peg' in correct color AND position | 1 white peg for each peg correct in color only
-# scoring -> only codemaker gets points in round | player with highest total points after all rounds finished
+
 
 # human vs computer
 

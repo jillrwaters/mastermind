@@ -8,6 +8,19 @@ key_pegs = %w[black white]
 # scoring -> only codemaker gets points in round | player with highest total points after all rounds finished
 
 # human vs computer
+
+# computer generates secret code
+# human guesses
+# computer gives feedback until human guesses correctly or 12 turns are up
+# computer gets point if human doesn't guess correctly
+# human gets point if human guesses correctly
+# repeat until 12 rounds are up
+# player with most points wins
+# if tie, play another round
+
+
+
+
 class Player
   attr_accessor :human, :player2_name, :codemaker, :codebreaker
 
@@ -15,7 +28,7 @@ class Player
     @computer = computer
     puts 'What is your name?'
     @human = gets.chomp
-    puts "Thanks, #{@human}! You will be the codebreaker.-ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp".light_black
+    puts "Thanks, #{@human}! You will be the codebreaker.".light_black
   end
 end
 
@@ -70,7 +83,10 @@ class PegSet
   
 end
 
-# ask player whether duplicates and/or blanks are allowed also how many games
+# ask player whether duplicates and/or blanks are allowed 
+# ask player how many games they want to play
+
+
 module Questions
   def allow_duplicates?
     puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.light_green

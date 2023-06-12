@@ -1,34 +1,38 @@
 require 'colorize'
 
+def allow_duplicates?
+    puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.light_yellow
+    answer = gets.chomp.downcase
+    raise 'Enter Y or N only'.red unless %w[y n yes no].include?(answer)
+  rescue=>e
+    puts e.message
+    retry
+  end
+
+
 # pick a secret code ::
     # 6 colors to choose from 
         # 4 times pick a color randomly and push to empty array
     # 4 char code / empty array ^
 
-def generate_secret_code(colors)
+def test_generate_secret_code(colors)
     secret_code = []
-    4.times do 
-        # if duplicates are not allowed - use uniq
-        begin
-            new_color = colors.sample
-            if secret_code.include?(new_color)
-                raise "error!"
-            else
-                secret_code << new_color
-            end
-        rescue 
-            retry
-        end
-
-        # -- uniq: Returns an array containing non-duplicate elements.
-        # if blanks are allowed -- add 'blank' to the color array
-
+    4.times do |i = 0|
+        new_color = colors.sample
+        secret_code << new_color
+        i += 1
     end
-    p secret_code
+
+    secret_code
+end
+
+if !allow_duplicates?
+    # generate a secret code. if the code has duplicates, remove them, and replace with another color that is not a duplicate
 end
 
 colors = %w[red blue green purple pink yellow]
-generate_secret_code(colors)
+# generate_secret_code_no_duplicates_no_blanks(colors)
+puts test_generate_secret_code(colors)
 
 
 
@@ -47,15 +51,8 @@ generate_secret_code(colors)
 # ask if they want to allow duplicates in the secret code
 
 
-def allow_duplicates?
-    puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.light_yellow
-    raise 'Enter Y or N only'.red unless %w[y n yes no].include?(gets.chomp.downcase)
-  rescue=>e
-    puts e.message
-    retry
-  end
 
-#   puts allow_duplicates?
+
 
 # explain blanks
 

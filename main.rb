@@ -1,6 +1,5 @@
 require 'colorize'
 
-
 # human vs computer
 
 # computer generates secret code

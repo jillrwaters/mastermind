@@ -21,14 +21,14 @@ def generate_secret_code(duplicates_allowed, blanks_allowed, colors)
     secret_code << new_color
   end
 
-  puts secret_code
-  puts '------------------'
+  secret_code
+  
 end
 
-generate_secret_code(true, true, %w[red blue green purple pink yellow])
-generate_secret_code(true, false, %w[red blue green purple pink yellow])
-generate_secret_code(false, true, %w[red blue green purple pink yellow])
-generate_secret_code(false, false, %w[red blue green purple pink yellow])
+# generate_secret_code(true, true, %w[red blue green purple pink yellow])
+# generate_secret_code(true, false, %w[red blue green purple pink yellow])
+# generate_secret_code(false, true, %w[red blue green purple pink yellow])
+# generate_secret_code(false, false, %w[red blue green purple pink yellow])
 
 # human guesses
 def human_guess
@@ -38,13 +38,11 @@ def human_guess
 end
 
 # computer gives feedback until human guesses correctly or 12 turns are up
-def computer_feedback(human_guess)
+def computer_feedback(human_guess, secret_code)
     guess = human_guess
-    secret_code = generate_secret_code(false, false, %w[red blue green purple pink yellow])
     feedback = []
 
     guess.each_with_index do |color, index|
-        # if the color is in the secret code, check if it is in the correct position
         if secret_code.include?(color)
             if secret_code[index] == color
                 feedback << 'black'
@@ -57,7 +55,20 @@ def computer_feedback(human_guess)
     feedback
 end
 
-# puts computer_feedback(human_guess)
+def play_round
+    secret_code = generate_secret_code(false, false, %w[red blue green purple pink yellow])
+    guess = human_guess
+    feedback = computer_feedback(guess, secret_code)
+    puts feedback
+end
+
+# def play
+#     secret_code = generate_secret_code(false, false, %w[red blue green purple pink yellow])
+#     12.times do |turn, i|
+#         puts "Turn #{i + 1}"
+#         i += 1
+#     end
+# end
 
 
 

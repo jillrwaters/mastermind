@@ -1,13 +1,19 @@
 require 'colorize'
-# code pegs: used by both players for making and guessing secret code
-# key pegs: used by codemaker for feedback after codebreaker guesses
-key_pegs = %w[black white]
-# gameplay -> codemaker chooses code based on agreed upon rules -> 12 turns with 2 parts to each turn: guessing and feedback
-# codebreaker's part -> make a guess with 4 'pegs'
-# codemaker's part -> feedback. 1 black peg for each 'peg' in correct color AND position | 1 white peg for each peg correct in color only
-# scoring -> only codemaker gets points in round | player with highest total points after all rounds finished
 
 # human vs computer
+
+# computer generates secret code
+# human guesses
+# computer gives feedback until human guesses correctly or 12 turns are up
+# computer gets point if human doesn't guess correctly
+# human gets point if human guesses correctly
+# repeat until 12 rounds are up
+# player with most points wins
+# if tie, play another round
+
+
+
+
 class Player
   attr_accessor :human, :player2_name, :codemaker, :codebreaker
 
@@ -70,7 +76,10 @@ class PegSet
   
 end
 
-# ask player whether duplicates and/or blanks are allowed also how many games
+# ask player whether duplicates and/or blanks are allowed 
+# ask player how many games they want to play
+
+
 module Questions
   def allow_duplicates?
     puts 'Do you want to allow duplicates in the secret code? Press Y for yes or N for no.'.light_green
